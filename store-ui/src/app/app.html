@@ -30,6 +30,16 @@
 
         <button
           class="nav-item"
+          [class.active]="activeView === 'orders'"
+          type="button"
+          (click)="showOrders()"
+        >
+          <span>▣</span>
+          Orders
+        </button>
+
+        <button
+          class="nav-item"
           [class.active]="activeView === 'products'"
           type="button"
           (click)="showProducts()"
@@ -79,11 +89,13 @@
           {{
             activeView === 'storefront'
               ? 'Shop Products'
-              : activeView === 'products'
-                ? 'Product Dashboard'
-                : activeView === 'inventory'
-                  ? 'Inventory Dashboard'
-                  : 'Kafka Events'
+              : activeView === 'orders'
+                ? 'Order History'
+                : activeView === 'products'
+                  ? 'Product Dashboard'
+                  : activeView === 'inventory'
+                    ? 'Inventory Dashboard'
+                    : 'Kafka Events'
           }}
         </h1>
 
@@ -91,11 +103,13 @@
           {{
             activeView === 'storefront'
               ? 'Browse products and add your favorites to the shopping cart.'
-              : activeView === 'products'
-                ? 'Manage products and synchronize inventory through Kafka.'
-                : activeView === 'inventory'
-                  ? 'View inventory synchronized from Product Service through Kafka.'
-                  : 'Monitor product events consumed by Inventory Service.'
+              : activeView === 'orders'
+                ? 'Review customer purchases created through the checkout service.'
+                : activeView === 'products'
+                  ? 'Manage products and synchronize inventory through Kafka.'
+                  : activeView === 'inventory'
+                    ? 'View inventory synchronized from Product Service through Kafka.'
+                    : 'Monitor product events consumed by Inventory Service.'
           }}
         </p>
       </div>
@@ -363,7 +377,10 @@
     <!-- Admin Statistics -->
     <section
       class="stats-grid"
-      *ngIf="activeView !== 'storefront'"
+      *ngIf="
+        activeView !== 'storefront' &&
+        activeView !== 'orders'
+      "
     >
       <article class="stat-card">
         <span class="stat-label">Total Products</span>
@@ -381,6 +398,113 @@
         <span class="stat-label">Inventory Value</span>
         <strong>{{ inventoryValue | currency }}</strong>
         <small>Current stock valuation</small>
+      </article>
+    </section>
+
+    <!-- Order Statistics -->
+    <section
+      class="stats-grid"
+      *ngIf="activeView === 'orders'"
+    >
+      <article class="stat-card">
+        <span class="stat-label">Total Orders</span>
+        <strong>{{ totalOrders }}</strong>
+        <small>Customer purchases</small>
+      </article>
+
+      <article class="stat-card">
+        <span class="stat-label">Items Ordered</span>
+        <strong>{{ totalItemsOrdered }}</strong>
+        <small>Across all customer orders</small>
+      </article>
+
+      <article class="stat-card accent">
+        <span class="stat-label">Order Revenue</span>
+        <strong>{{ orderRevenue | currency }}</strong>
+        <small>Total value of saved orders</small>
+      </article>
+    </section>
+
+    <!-- Order History -->
+    <section
+      class="dashboard-grid"
+      *ngIf="activeView === 'orders'"
+    >
+      <article class="panel products-panel orders-panel">
+        <div class="panel-heading">
+          <div>
+            <p class="eyebrow">CUSTOMER PURCHASES</p>
+            <h2>Orders</h2>
+          </div>
+
+          <span class="product-count">
+            {{ totalOrders }} orders
+          </span>
+        </div>
+
+        <div class="table-wrapper">
+          <table>
+            <thead>
+            <tr>
+              <th>Order</th>
+              <th>Customer</th>
+              <th>Products</th>
+              <th>Total</th>
+              <th>Status</th>
+              <th>Placed At</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            <tr
+              *ngFor="let order of orders; trackBy: trackOrder"
+            >
+              <td>
+                <strong class="order-id">
+                  #{{ order.id }}
+                </strong>
+              </td>
+
+              <td>
+                <div class="customer-details">
+                  <strong>{{ order.customerName }}</strong>
+                  <span>{{ order.customerEmail }}</span>
+                </div>
+              </td>
+
+              <td>
+                <div class="order-items-summary">
+                  <span *ngFor="let item of order.items">
+                    {{ item.productName }} × {{ item.quantity }}
+                  </span>
+                </div>
+              </td>
+
+              <td>
+                <strong>{{ order.totalAmount | currency }}</strong>
+              </td>
+
+              <td>
+                <span class="order-status-badge">
+                  {{ order.status }}
+                </span>
+              </td>
+
+              <td>{{ order.createdAt | date: 'medium' }}</td>
+            </tr>
+            </tbody>
+          </table>
+
+          <div
+            class="empty-state"
+            *ngIf="orders.length === 0"
+          >
+            <strong>No orders available</strong>
+            <span>
+              Place an order from the Store page to see it here.
+            </span>
+          </div>
+        </div>
       </article>
     </section>
 

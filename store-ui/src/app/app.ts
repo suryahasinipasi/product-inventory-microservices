@@ -5,7 +5,7 @@ import { CartItem } from './models/cart-item';
 import { Product, ProductApiService, ProductRequest } from './services/product-api.service';
 import { InventoryApiService, InventoryItem } from './services/inventory-api.service';
 import { EventApiService, ProductEvent } from './services/event-api.service';
-import { CreateOrderRequest, OrderApiService } from './services/order-api.service';
+import { CreateOrderRequest, OrderApiService, OrderResponse } from './services/order-api.service';
 
 @Component({
   selector: 'app-root',
@@ -14,12 +14,13 @@ import { CreateOrderRequest, OrderApiService } from './services/order-api.servic
   styleUrl: './app.scss',
 })
 export class App implements OnInit {
-  activeView: 'storefront' | 'products' | 'inventory' | 'events' = 'storefront';
+  activeView: 'storefront' | 'orders' | 'products' | 'inventory' | 'events' = 'storefront';
 
   products: Product[] = [];
   inventoryItems: InventoryItem[] = [];
   events: ProductEvent[] = [];
   cartItems: CartItem[] = [];
+  orders: OrderResponse[] = [];
 
   productName = '';
   productPrice: number | null = null;
@@ -44,6 +45,7 @@ export class App implements OnInit {
     this.loadProducts();
     this.loadInventory();
     this.loadEvents();
+    this.loadOrders();
   }
 
   showStorefront(): void {
@@ -52,6 +54,11 @@ export class App implements OnInit {
 
   showProducts(): void {
     this.activeView = 'products';
+  }
+
+  showOrders(): void {
+    this.activeView = 'orders';
+    this.loadOrders();
   }
 
   showInventory(): void {
@@ -100,6 +107,18 @@ export class App implements OnInit {
     });
   }
 
+  loadOrders(): void {
+    this.orderApi.getOrders().subscribe({
+      next: (orders) => {
+        this.orders = orders;
+        this.changeDetector.markForCheck();
+      },
+      error: (error) => {
+        console.error('Unable to load orders', error);
+      },
+    });
+  }
+
   get totalProducts(): number {
     return this.products.length;
   }
@@ -118,6 +137,22 @@ export class App implements OnInit {
 
   get cartSubtotal(): number {
     return this.cartItems.reduce((total, item) => total + item.product.price * item.quantity, 0);
+  }
+
+  get totalOrders(): number {
+    return this.orders.length;
+  }
+
+  get orderRevenue(): number {
+    return this.orders.reduce((total, order) => total + order.totalAmount, 0);
+  }
+
+  get totalItemsOrdered(): number {
+    return this.orders.reduce(
+      (orderTotal, order) =>
+        orderTotal + order.items.reduce((itemTotal, item) => itemTotal + item.quantity, 0),
+      0,
+    );
   }
 
   addToCart(product: Product): void {
@@ -210,6 +245,10 @@ export class App implements OnInit {
       next: (order) => {
         this.checkoutMessage = `Order #${order.id} placed successfully!`;
 
+        this.orders = [
+          order,
+          ...this.orders.filter((existingOrder) => existingOrder.id !== order.id),
+        ];
         this.cartItems = [];
         this.customerName = '';
         this.customerEmail = '';
@@ -349,5 +388,9 @@ export class App implements OnInit {
 
   trackCart(index: number, item: CartItem): number {
     return item.product.id;
+  }
+
+  trackOrder(index: number, order: OrderResponse): number {
+    return order.id;
   }
 }
