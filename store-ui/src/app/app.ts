@@ -5,6 +5,7 @@ import { CartItem } from './models/cart-item';
 import { Product, ProductApiService, ProductRequest } from './services/product-api.service';
 import { InventoryApiService, InventoryItem } from './services/inventory-api.service';
 import { EventApiService, ProductEvent } from './services/event-api.service';
+import { CreateOrderRequest, OrderApiService } from './services/order-api.service';
 
 @Component({
   selector: 'app-root',
@@ -13,7 +14,7 @@ import { EventApiService, ProductEvent } from './services/event-api.service';
   styleUrl: './app.scss',
 })
 export class App implements OnInit {
-  activeView: 'storefront' | 'products' | 'inventory' | 'events' = 'products';
+  activeView: 'storefront' | 'products' | 'inventory' | 'events' = 'storefront';
 
   products: Product[] = [];
   inventoryItems: InventoryItem[] = [];
@@ -25,10 +26,17 @@ export class App implements OnInit {
   productQuantity: number | null = null;
   editingProductId: number | null = null;
 
+  customerName = '';
+  customerEmail = '';
+  placingOrder = false;
+  checkoutMessage = '';
+  checkoutError = '';
+
   constructor(
     private readonly productApi: ProductApiService,
     private readonly inventoryApi: InventoryApiService,
     private readonly eventApi: EventApiService,
+    private readonly orderApi: OrderApiService,
     private readonly changeDetector: ChangeDetectorRef,
   ) {}
 
@@ -117,6 +125,9 @@ export class App implements OnInit {
       return;
     }
 
+    this.checkoutMessage = '';
+    this.checkoutError = '';
+
     const existingItem = this.cartItems.find((item) => item.product.id === product.id);
 
     if (existingItem) {
@@ -164,7 +175,56 @@ export class App implements OnInit {
 
   clearCart(): void {
     this.cartItems = [];
+    this.checkoutError = '';
     this.changeDetector.markForCheck();
+  }
+
+  placeOrder(): void {
+    this.checkoutMessage = '';
+    this.checkoutError = '';
+
+    if (this.cartItems.length === 0) {
+      this.checkoutError = 'Your cart is empty.';
+      return;
+    }
+
+    if (!this.customerName.trim() || !this.customerEmail.trim()) {
+      this.checkoutError = 'Enter your name and email address.';
+      return;
+    }
+
+    const request: CreateOrderRequest = {
+      customerName: this.customerName.trim(),
+      customerEmail: this.customerEmail.trim(),
+      items: this.cartItems.map((item) => ({
+        productId: item.product.id,
+        productName: item.product.name,
+        unitPrice: item.product.price,
+        quantity: item.quantity,
+      })),
+    };
+
+    this.placingOrder = true;
+
+    this.orderApi.createOrder(request).subscribe({
+      next: (order) => {
+        this.checkoutMessage = `Order #${order.id} placed successfully!`;
+
+        this.cartItems = [];
+        this.customerName = '';
+        this.customerEmail = '';
+        this.placingOrder = false;
+        this.changeDetector.markForCheck();
+      },
+      error: (error) => {
+        console.error('Unable to place order', error);
+
+        this.checkoutError = 'Unable to place the order. Please try again.';
+
+        this.placingOrder = false;
+        this.changeDetector.markForCheck();
+      },
+    });
   }
 
   addProduct(): void {
@@ -291,4 +351,3 @@ export class App implements OnInit {
     return item.product.id;
   }
 }
-

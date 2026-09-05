@@ -201,6 +201,20 @@
           </span>
         </div>
 
+        <p
+          class="checkout-message success"
+          *ngIf="checkoutMessage"
+        >
+          {{ checkoutMessage }}
+        </p>
+
+        <p
+          class="checkout-message error"
+          *ngIf="checkoutError && cartItems.length === 0"
+        >
+          {{ checkoutError }}
+        </p>
+
         <div
           class="empty-cart"
           *ngIf="cartItems.length === 0"
@@ -280,13 +294,59 @@
               Taxes and shipping will be calculated during checkout.
             </small>
 
-            <button
-              class="checkout-button"
-              type="button"
-              disabled
+            <form
+              class="checkout-form"
+              #checkoutForm="ngForm"
+              (ngSubmit)="placeOrder()"
             >
-              Checkout — coming next
-            </button>
+              <label for="customerName">
+                Customer name
+              </label>
+
+              <input
+                id="customerName"
+                name="customerName"
+                type="text"
+                placeholder="Your full name"
+                [(ngModel)]="customerName"
+                required
+              />
+
+              <label for="customerEmail">
+                Email address
+              </label>
+
+              <input
+                id="customerEmail"
+                name="customerEmail"
+                type="email"
+                placeholder="you@example.com"
+                [(ngModel)]="customerEmail"
+                required
+                email
+              />
+
+              <p
+                class="checkout-message error"
+                *ngIf="checkoutError"
+              >
+                {{ checkoutError }}
+              </p>
+
+              <button
+                class="checkout-button"
+                type="submit"
+                [disabled]="
+                  checkoutForm.invalid || placingOrder
+                "
+              >
+                {{
+                  placingOrder
+                    ? 'Placing Order...'
+                    : 'Place Order'
+                }}
+              </button>
+            </form>
 
             <button
               class="clear-cart-button"

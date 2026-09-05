@@ -1023,6 +1023,69 @@ form input:focus {
   .store-product-grid {
     grid-template-columns: minmax(0, 1fr);
   }
+  /* Checkout form */
+
+  .checkout-form {
+    margin-top: 1rem;
+    display: grid;
+    gap: 0.75rem;
+  }
+
+  .checkout-form label {
+    color: #34405a;
+    font-size: 0.82rem;
+    font-weight: 750;
+  }
+
+  .checkout-form input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0.8rem 0.9rem;
+    border: 1px solid #dce2ed;
+    border-radius: 11px;
+    outline: none;
+    color: #172033;
+    background: #f9faff;
+    font: inherit;
+    transition:
+      border-color 160ms ease,
+      box-shadow 160ms ease;
+  }
+
+  .checkout-form input:focus {
+    border-color: #5865ed;
+    box-shadow: 0 0 0 3px rgba(88, 101, 237, 0.13);
+  }
+
+  .checkout-form .checkout-button {
+    margin-top: 0.35rem;
+  }
+
+  .checkout-message {
+    margin: 1rem 1.25rem 0;
+    padding: 0.8rem 0.95rem;
+    border-radius: 11px;
+    font-size: 0.84rem;
+    font-weight: 700;
+    line-height: 1.4;
+  }
+
+  .checkout-form .checkout-message {
+    margin: 0;
+  }
+
+  .checkout-message.success {
+    border: 1px solid #b7ead8;
+    color: #11684b;
+    background: #e8faf3;
+  }
+
+  .checkout-message.error {
+    border: 1px solid #f1c3ca;
+    color: #af4052;
+    background: #fff0f2;
+  }
+
 
   .store-hero {
     padding: 1.5rem;
