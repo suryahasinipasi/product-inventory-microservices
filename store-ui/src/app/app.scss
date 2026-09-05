@@ -558,3 +558,41 @@ form input:focus {
   font-size: 0.9rem;
   white-space: nowrap;
 }
+.actions {
+  white-space: nowrap;
+}
+
+.edit-button {
+  margin-right: 0.5rem;
+  padding: 0.65rem 0.9rem;
+  border: 0;
+  border-radius: 0.75rem;
+  background: #eef2ff;
+  color: #4657d9;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.edit-button:hover {
+  background: #dde4ff;
+}
+
+.form-actions {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.cancel-button {
+  width: 100%;
+  padding: 0.9rem;
+  border: 1px solid #d8deea;
+  border-radius: 0.8rem;
+  background: white;
+  color: #5f6b7e;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.cancel-button:hover {
+  background: #f4f6fa;
+}

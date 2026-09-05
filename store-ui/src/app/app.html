@@ -164,6 +164,15 @@
 
               <td class="actions">
                 <button
+                  class="edit-button"
+                  type="button"
+                  (click)="editProduct(product)"
+                  [attr.aria-label]="'Edit ' + product.name"
+                >
+                  Edit
+                </button>
+
+                <button
                   class="delete-button"
                   type="button"
                   (click)="deleteProduct(product.id)"
@@ -189,8 +198,21 @@
       <article class="panel form-panel">
         <div class="panel-heading">
           <div>
-            <p class="eyebrow">NEW PRODUCT</p>
-            <h2>Add Product</h2>
+            <p class="eyebrow">
+              {{
+                editingProductId === null
+                  ? 'NEW PRODUCT'
+                  : 'EDIT PRODUCT'
+              }}
+            </p>
+
+            <h2>
+              {{
+                editingProductId === null
+                  ? 'Add Product'
+                  : 'Update Product'
+              }}
+            </h2>
           </div>
         </div>
 
@@ -234,16 +256,35 @@
             required
           />
 
-          <button
-            class="primary-button"
-            type="submit"
-            [disabled]="productForm.invalid"
-          >
-            Add Product
-          </button>
+          <div class="form-actions">
+            <button
+              class="primary-button"
+              type="submit"
+              [disabled]="productForm.invalid"
+            >
+              {{
+                editingProductId === null
+                  ? 'Add Product'
+                  : 'Update Product'
+              }}
+            </button>
+
+            <button
+              *ngIf="editingProductId !== null"
+              class="cancel-button"
+              type="button"
+              (click)="cancelEdit()"
+            >
+              Cancel
+            </button>
+          </div>
 
           <p class="form-note">
-            Creating a product publishes an event through Kafka.
+            {{
+              editingProductId === null
+                ? 'Creating a product publishes an event through Kafka.'
+                : 'Updating this product synchronizes Inventory through Kafka.'
+            }}
           </p>
         </form>
       </article>
