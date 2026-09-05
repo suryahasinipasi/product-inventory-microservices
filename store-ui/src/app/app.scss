@@ -596,3 +596,48 @@ form input:focus {
 .cancel-button:hover {
   background: #f4f6fa;
 }
+.main-content,
+.dashboard-grid {
+  min-width: 0;
+}
+
+.events-panel {
+  grid-column: 1 / -1;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.events-panel .table-wrapper {
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.events-panel table {
+  min-width: 900px;
+}
+
+.event-badge {
+  display: inline-block;
+  padding: 0.5rem 0.7rem;
+  border-radius: 999px;
+  background: #eef2f7;
+  color: #526078;
+  font-size: 0.75rem;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.created-event {
+  background: #e5f8ef;
+  color: #137a50;
+}
+
+.updated-event {
+  background: #e9efff;
+  color: #4056c7;
+}
+
+.deleted-event {
+  background: #ffebee;
+  color: #c53c4d;
+}

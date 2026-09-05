@@ -1,6 +1,7 @@
 package com.surya.inventoryservice.messaging;
 
 import com.surya.inventoryservice.event.ProductEvent;
+import com.surya.inventoryservice.service.EventLogService;
 import com.surya.inventoryservice.service.InventoryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,14 +15,20 @@ public class ProductEventConsumer {
             LoggerFactory.getLogger(ProductEventConsumer.class);
 
     private final InventoryService inventoryService;
+    private final EventLogService eventLogService;
 
-    public ProductEventConsumer(InventoryService inventoryService) {
+    public ProductEventConsumer(
+            InventoryService inventoryService,
+            EventLogService eventLogService) {
+
         this.inventoryService = inventoryService;
+        this.eventLogService = eventLogService;
     }
 
     @KafkaListener(topics = "product-events")
     public void consume(ProductEvent event) {
         inventoryService.processProductEvent(event);
+        eventLogService.record(event);
 
         log.info(
                 "{} event consumed: productId={}, name={}, quantity={}",

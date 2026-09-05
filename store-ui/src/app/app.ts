@@ -3,6 +3,7 @@ import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Product, ProductApiService, ProductRequest } from './services/product-api.service';
 import { InventoryApiService, InventoryItem } from './services/inventory-api.service';
+import { EventApiService, ProductEvent } from './services/event-api.service';
 
 @Component({
   selector: 'app-root',
@@ -11,10 +12,11 @@ import { InventoryApiService, InventoryItem } from './services/inventory-api.ser
   styleUrl: './app.scss',
 })
 export class App implements OnInit {
-  activeView: 'products' | 'inventory' = 'products';
+  activeView: 'products' | 'inventory' | 'events' = 'products';
 
   products: Product[] = [];
   inventoryItems: InventoryItem[] = [];
+  events: ProductEvent[] = [];
 
   productName = '';
   productPrice: number | null = null;
@@ -24,12 +26,14 @@ export class App implements OnInit {
   constructor(
     private readonly productApi: ProductApiService,
     private readonly inventoryApi: InventoryApiService,
+    private readonly eventApi: EventApiService,
     private readonly changeDetector: ChangeDetectorRef,
   ) {}
 
   ngOnInit(): void {
     this.loadProducts();
     this.loadInventory();
+    this.loadEvents();
   }
 
   showProducts(): void {
@@ -39,6 +43,11 @@ export class App implements OnInit {
   showInventory(): void {
     this.activeView = 'inventory';
     this.loadInventory();
+  }
+
+  showEvents(): void {
+    this.activeView = 'events';
+    this.loadEvents();
   }
 
   loadProducts(): void {
@@ -61,6 +70,18 @@ export class App implements OnInit {
       },
       error: (error) => {
         console.error('Unable to load inventory', error);
+      },
+    });
+  }
+
+  loadEvents(): void {
+    this.eventApi.getEvents().subscribe({
+      next: (events) => {
+        this.events = events;
+        this.changeDetector.markForCheck();
+      },
+      error: (error) => {
+        console.error('Unable to load Kafka events', error);
       },
     });
   }
@@ -105,7 +126,7 @@ export class App implements OnInit {
 
           this.resetForm();
           this.changeDetector.markForCheck();
-          setTimeout(() => this.loadInventory(), 500);
+          this.refreshEventData();
         },
         error: (error) => {
           console.error('Unable to update product', error);
@@ -120,7 +141,7 @@ export class App implements OnInit {
         this.products = [...this.products, createdProduct];
         this.resetForm();
         this.changeDetector.markForCheck();
-        setTimeout(() => this.loadInventory(), 500);
+        this.refreshEventData();
       },
       error: (error) => {
         console.error('Unable to create product', error);
@@ -149,12 +170,19 @@ export class App implements OnInit {
         }
 
         this.changeDetector.markForCheck();
-        setTimeout(() => this.loadInventory(), 500);
+        this.refreshEventData();
       },
       error: (error) => {
         console.error('Unable to delete product', error);
       },
     });
+  }
+
+  private refreshEventData(): void {
+    setTimeout(() => {
+      this.loadInventory();
+      this.loadEvents();
+    }, 500);
   }
 
   private resetForm(): void {
@@ -170,5 +198,9 @@ export class App implements OnInit {
 
   trackInventory(index: number, item: InventoryItem): number {
     return item.id;
+  }
+
+  trackEvent(index: number, event: ProductEvent): string {
+    return `${event.productId}-${event.occurredAt}-${index}`;
   }
 }

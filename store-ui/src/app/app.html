@@ -32,8 +32,9 @@
 
         <button
           class="nav-item"
+          [class.active]="activeView === 'events'"
           type="button"
-          title="Kafka Events dashboard is coming next"
+          (click)="showEvents()"
         >
           <span>⌁</span>
           Kafka Events
@@ -59,7 +60,9 @@
           {{
             activeView === 'products'
               ? 'Product Dashboard'
-              : 'Inventory Dashboard'
+              : activeView === 'inventory'
+                ? 'Inventory Dashboard'
+                : 'Kafka Events'
           }}
         </h1>
 
@@ -67,7 +70,9 @@
           {{
             activeView === 'products'
               ? 'Manage products and synchronize inventory through Kafka.'
-              : 'View inventory synchronized from Product Service through Kafka.'
+              : activeView === 'inventory'
+                ? 'View inventory synchronized from Product Service through Kafka.'
+                : 'Monitor product events consumed by Inventory Service.'
           }}
         </p>
       </div>
@@ -367,6 +372,87 @@
             <span>
               Create a product to send an event through Kafka.
             </span>
+          </div>
+        </div>
+      </article>
+    </section>
+    <section
+      class="dashboard-grid"
+      *ngIf="activeView === 'events'"
+    >
+      <article class="panel products-panel events-panel">
+        <div class="panel-heading">
+          <div>
+            <p class="eyebrow">LIVE EVENT HISTORY</p>
+            <h2>Kafka Events</h2>
+          </div>
+
+          <span class="product-count">
+        {{ events.length }} events
+      </span>
+        </div>
+
+        <div class="table-wrapper">
+          <table>
+            <thead>
+            <tr>
+              <th>Event Type</th>
+              <th>Product</th>
+              <th>Price</th>
+              <th>Quantity</th>
+              <th>Occurred At</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            <tr
+              *ngFor="let event of events; trackBy: trackEvent"
+            >
+              <td>
+            <span
+              class="event-badge"
+              [class.created-event]="
+                event.eventType === 'PRODUCT_CREATED'
+              "
+              [class.updated-event]="
+                event.eventType === 'PRODUCT_UPDATED'
+              "
+              [class.deleted-event]="
+                event.eventType === 'PRODUCT_DELETED'
+              "
+            >
+              {{ event.eventType }}
+            </span>
+              </td>
+
+              <td>
+                <div class="product-name">
+                  <div class="product-icon">
+                    {{ event.name.charAt(0) }}
+                  </div>
+
+                  <div>
+                    <strong>{{ event.name }}</strong>
+                    <span>Product ID: {{ event.productId }}</span>
+                  </div>
+                </div>
+              </td>
+
+              <td>{{ event.price | currency }}</td>
+              <td>{{ event.quantity }}</td>
+              <td>{{ event.occurredAt | date: 'medium' }}</td>
+            </tr>
+            </tbody>
+          </table>
+
+          <div
+            class="empty-state"
+            *ngIf="events.length === 0"
+          >
+            <strong>No Kafka events available</strong>
+            <span>
+          Create, update, or delete a product to generate an event.
+        </span>
           </div>
         </div>
       </article>
