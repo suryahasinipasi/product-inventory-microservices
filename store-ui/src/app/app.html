@@ -3,6 +3,7 @@
     <div>
       <div class="brand">
         <div class="brand-mark">SP</div>
+
         <div>
           <strong>Surya Store</strong>
           <span>Inventory System</span>
@@ -10,6 +11,23 @@
       </div>
 
       <nav class="navigation">
+        <button
+          class="nav-item"
+          [class.active]="activeView === 'storefront'"
+          type="button"
+          (click)="showStorefront()"
+        >
+          <span>⌂</span>
+          Store
+
+          <strong
+            class="cart-count"
+            *ngIf="cartCount > 0"
+          >
+            {{ cartCount }}
+          </strong>
+        </button>
+
         <button
           class="nav-item"
           [class.active]="activeView === 'products'"
@@ -44,6 +62,7 @@
 
     <div class="service-status">
       <span class="status-dot"></span>
+
       <div>
         <strong>Services online</strong>
         <span>Product · Inventory · Kafka</span>
@@ -58,27 +77,32 @@
 
         <h1>
           {{
-            activeView === 'products'
-              ? 'Product Dashboard'
-              : activeView === 'inventory'
-                ? 'Inventory Dashboard'
-                : 'Kafka Events'
+            activeView === 'storefront'
+              ? 'Shop Products'
+              : activeView === 'products'
+                ? 'Product Dashboard'
+                : activeView === 'inventory'
+                  ? 'Inventory Dashboard'
+                  : 'Kafka Events'
           }}
         </h1>
 
         <p class="subtitle">
           {{
-            activeView === 'products'
-              ? 'Manage products and synchronize inventory through Kafka.'
-              : activeView === 'inventory'
-                ? 'View inventory synchronized from Product Service through Kafka.'
-                : 'Monitor product events consumed by Inventory Service.'
+            activeView === 'storefront'
+              ? 'Browse products and add your favorites to the shopping cart.'
+              : activeView === 'products'
+                ? 'Manage products and synchronize inventory through Kafka.'
+                : activeView === 'inventory'
+                  ? 'View inventory synchronized from Product Service through Kafka.'
+                  : 'Monitor product events consumed by Inventory Service.'
           }}
         </p>
       </div>
 
       <div class="profile">
         <div class="profile-avatar">SH</div>
+
         <div>
           <strong>Surya Hasini</strong>
           <span>Java Full Stack Developer</span>
@@ -86,7 +110,201 @@
       </div>
     </header>
 
-    <section class="stats-grid">
+    <!-- Customer Storefront -->
+    <section
+      class="storefront-layout"
+      *ngIf="activeView === 'storefront'"
+    >
+      <div class="storefront-main">
+        <div class="store-hero">
+          <div>
+            <p class="eyebrow">FEATURED COLLECTION</p>
+            <h2>Everything you need, in one place.</h2>
+            <p>
+              Products are loaded directly from the Spring Boot
+              Product Service.
+            </p>
+          </div>
+
+          <span class="store-hero-badge">
+            {{ totalProducts }} products
+          </span>
+        </div>
+
+        <div class="store-product-grid">
+          <article
+            class="store-product-card"
+            *ngFor="let product of products; trackBy: trackProduct"
+          >
+            <div class="store-product-visual">
+              {{ product.name.charAt(0) }}
+            </div>
+
+            <div class="store-product-content">
+              <div class="store-product-heading">
+                <div>
+                  <span class="store-category">Technology</span>
+                  <h3>{{ product.name }}</h3>
+                </div>
+
+                <strong>{{ product.price | currency }}</strong>
+              </div>
+
+              <p>
+                High-quality {{ product.name }} available from
+                Surya Store.
+              </p>
+
+              <div class="store-product-footer">
+                <span
+                  class="availability"
+                  [class.low-availability]="product.quantity <= 10"
+                >
+                  {{
+                    product.quantity > 0
+                      ? product.quantity + ' available'
+                      : 'Out of stock'
+                  }}
+                </span>
+
+                <button
+                  class="add-cart-button"
+                  type="button"
+                  (click)="addToCart(product)"
+                  [disabled]="product.quantity === 0"
+                >
+                  Add to Cart
+                </button>
+              </div>
+            </div>
+          </article>
+        </div>
+
+        <div
+          class="empty-state storefront-empty"
+          *ngIf="products.length === 0"
+        >
+          <strong>No products available</strong>
+          <span>Please check again later.</span>
+        </div>
+      </div>
+
+      <aside class="panel cart-panel">
+        <div class="cart-heading">
+          <div>
+            <p class="eyebrow">YOUR ORDER</p>
+            <h2>Shopping Cart</h2>
+          </div>
+
+          <span class="product-count">
+            {{ cartCount }} items
+          </span>
+        </div>
+
+        <div
+          class="empty-cart"
+          *ngIf="cartItems.length === 0"
+        >
+          <div class="empty-cart-icon">🛒</div>
+          <strong>Your cart is empty</strong>
+          <span>Add a product to begin shopping.</span>
+        </div>
+
+        <div
+          class="cart-content"
+          *ngIf="cartItems.length > 0"
+        >
+          <div class="cart-items">
+            <article
+              class="cart-item"
+              *ngFor="let item of cartItems; trackBy: trackCart"
+            >
+              <div class="cart-item-icon">
+                {{ item.product.name.charAt(0) }}
+              </div>
+
+              <div class="cart-item-details">
+                <strong>{{ item.product.name }}</strong>
+                <span>{{ item.product.price | currency }} each</span>
+
+                <div class="quantity-controls">
+                  <button
+                    type="button"
+                    (click)="decreaseCartQuantity(item.product.id)"
+                    aria-label="Decrease quantity"
+                  >
+                    −
+                  </button>
+
+                  <span>{{ item.quantity }}</span>
+
+                  <button
+                    type="button"
+                    (click)="addToCart(item.product)"
+                    [disabled]="
+                      item.quantity >= item.product.quantity
+                    "
+                    aria-label="Increase quantity"
+                  >
+                    +
+                  </button>
+                </div>
+              </div>
+
+              <div class="cart-item-total">
+                <strong>
+                  {{
+                    item.product.price * item.quantity
+                      | currency
+                  }}
+                </strong>
+
+                <button
+                  class="remove-cart-button"
+                  type="button"
+                  (click)="removeFromCart(item.product.id)"
+                >
+                  Remove
+                </button>
+              </div>
+            </article>
+          </div>
+
+          <div class="cart-summary">
+            <div>
+              <span>Subtotal</span>
+              <strong>{{ cartSubtotal | currency }}</strong>
+            </div>
+
+            <small>
+              Taxes and shipping will be calculated during checkout.
+            </small>
+
+            <button
+              class="checkout-button"
+              type="button"
+              disabled
+            >
+              Checkout — coming next
+            </button>
+
+            <button
+              class="clear-cart-button"
+              type="button"
+              (click)="clearCart()"
+            >
+              Clear cart
+            </button>
+          </div>
+        </div>
+      </aside>
+    </section>
+
+    <!-- Admin Statistics -->
+    <section
+      class="stats-grid"
+      *ngIf="activeView !== 'storefront'"
+    >
       <article class="stat-card">
         <span class="stat-label">Total Products</span>
         <strong>{{ totalProducts }}</strong>
@@ -106,6 +324,7 @@
       </article>
     </section>
 
+    <!-- Product Administration -->
     <section
       class="dashboard-grid"
       *ngIf="activeView === 'products'"
@@ -236,8 +455,10 @@
           />
 
           <label for="productPrice">Price</label>
+
           <div class="input-prefix">
             <span>$</span>
+
             <input
               id="productPrice"
               name="productPrice"
@@ -251,6 +472,7 @@
           </div>
 
           <label for="productQuantity">Quantity</label>
+
           <input
             id="productQuantity"
             name="productQuantity"
@@ -295,6 +517,7 @@
       </article>
     </section>
 
+    <!-- Inventory View -->
     <section
       class="dashboard-grid"
       *ngIf="activeView === 'inventory'"
@@ -376,6 +599,8 @@
         </div>
       </article>
     </section>
+
+    <!-- Kafka Events View -->
     <section
       class="dashboard-grid"
       *ngIf="activeView === 'events'"
@@ -388,8 +613,8 @@
           </div>
 
           <span class="product-count">
-        {{ events.length }} events
-      </span>
+            {{ events.length }} events
+          </span>
         </div>
 
         <div class="table-wrapper">
@@ -409,20 +634,20 @@
               *ngFor="let event of events; trackBy: trackEvent"
             >
               <td>
-            <span
-              class="event-badge"
-              [class.created-event]="
-                event.eventType === 'PRODUCT_CREATED'
-              "
-              [class.updated-event]="
-                event.eventType === 'PRODUCT_UPDATED'
-              "
-              [class.deleted-event]="
-                event.eventType === 'PRODUCT_DELETED'
-              "
-            >
-              {{ event.eventType }}
-            </span>
+                <span
+                  class="event-badge"
+                  [class.created-event]="
+                    event.eventType === 'PRODUCT_CREATED'
+                  "
+                  [class.updated-event]="
+                    event.eventType === 'PRODUCT_UPDATED'
+                  "
+                  [class.deleted-event]="
+                    event.eventType === 'PRODUCT_DELETED'
+                  "
+                >
+                  {{ event.eventType }}
+                </span>
               </td>
 
               <td>
@@ -451,8 +676,8 @@
           >
             <strong>No Kafka events available</strong>
             <span>
-          Create, update, or delete a product to generate an event.
-        </span>
+              Create, update, or delete a product to generate an event.
+            </span>
           </div>
         </div>
       </article>
