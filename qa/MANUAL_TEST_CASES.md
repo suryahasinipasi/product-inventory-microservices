@@ -10,7 +10,7 @@
 |---|---|---|---|---|---|
 | TC-SMK-001 | Environment | Verify services are running | Check ports 8080, 8081, 8082 and 4200 | All four ports are listening | PASS |
 | TC-SMK-002 | API | Verify APIs are available | Send GET requests to products, inventory, events and orders | Every API returns HTTP 200 | PASS |
-| TC-UI-001 | Store | Verify storefront loads | Open the application and select Store | Products and shopping cart are displayed | NOT RUN |
+| TC-UI-001 | Store | Verify storefront loads | Open the application and select Store | Products and shopping cart are displayed | PASS |
 | TC-CART-001 | Cart | Add a product to cart | Select an available product and click Add to Cart | Product appears in cart and cart count increases | NOT RUN |
 | TC-CART-002 | Cart | Remove a product from cart | Add a product and click Remove | Product disappears and subtotal is recalculated | NOT RUN |
 | TC-CART-003 | Cart | Prevent quantity exceeding stock | Keep increasing a cart item to the available-stock limit | Cart quantity does not exceed product stock | NOT RUN |
