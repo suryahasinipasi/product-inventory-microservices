@@ -19,7 +19,7 @@ export interface ProductRequest {
   providedIn: 'root',
 })
 export class ProductApiService {
-  private readonly apiUrl = 'http://localhost:8080/api/products';
+  private readonly apiUrl = '/api/products';
 
   constructor(private http: HttpClient) {}
 

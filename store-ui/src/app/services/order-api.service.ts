@@ -36,7 +36,7 @@ export interface OrderResponse {
   providedIn: 'root',
 })
 export class OrderApiService {
-  private readonly apiUrl = 'http:' + '//localhost:8082/api/orders';
+  private readonly apiUrl = '/api/orders';
 
   constructor(private readonly http: HttpClient) {}
 

@@ -15,7 +15,7 @@ export interface ProductEvent {
   providedIn: 'root',
 })
 export class EventApiService {
-  private readonly apiUrl = 'http:' + '//localhost:8081/api/events';
+  private readonly apiUrl = '/api/events';
 
   constructor(private http: HttpClient) {}
 

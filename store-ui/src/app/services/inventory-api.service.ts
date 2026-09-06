@@ -12,12 +12,10 @@ export interface InventoryItem {
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class InventoryApiService {
-
-  private readonly apiUrl =
-    'http:' + '//localhost:8081/api/inventory';
+  private readonly apiUrl = '/api/inventory';
 
   constructor(private http: HttpClient) {}
 
@@ -25,11 +23,7 @@ export class InventoryApiService {
     return this.http.get<InventoryItem[]>(this.apiUrl);
   }
 
-  getInventoryByProductId(
-    productId: number
-  ): Observable<InventoryItem> {
-    return this.http.get<InventoryItem>(
-      `${this.apiUrl}/${productId}`
-    );
+  getInventoryByProductId(productId: number): Observable<InventoryItem> {
+    return this.http.get<InventoryItem>(`${this.apiUrl}/${productId}`);
   }
 }
