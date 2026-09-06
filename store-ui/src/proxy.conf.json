@@ -2,41 +2,65 @@
   "/api/products": {
     "target": "http://localhost:8080",
     "secure": false,
-    "changeOrigin": true
+    "changeOrigin": true,
+    "headers": {
+      "Origin": "http://localhost:4200"
+    }
   },
   "/api/products/**": {
     "target": "http://localhost:8080",
     "secure": false,
-    "changeOrigin": true
+    "changeOrigin": true,
+    "headers": {
+      "Origin": "http://localhost:4200"
+    }
   },
   "/api/inventory": {
     "target": "http://localhost:8081",
     "secure": false,
-    "changeOrigin": true
+    "changeOrigin": true,
+    "headers": {
+      "Origin": "http://localhost:4200"
+    }
   },
   "/api/inventory/**": {
     "target": "http://localhost:8081",
     "secure": false,
-    "changeOrigin": true
+    "changeOrigin": true,
+    "headers": {
+      "Origin": "http://localhost:4200"
+    }
   },
   "/api/events": {
     "target": "http://localhost:8081",
     "secure": false,
-    "changeOrigin": true
+    "changeOrigin": true,
+    "headers": {
+      "Origin": "http://localhost:4200"
+    }
   },
   "/api/events/**": {
     "target": "http://localhost:8081",
     "secure": false,
-    "changeOrigin": true
+    "changeOrigin": true,
+    "headers": {
+      "Origin": "http://localhost:4200"
+    }
   },
   "/api/orders": {
     "target": "http://localhost:8082",
     "secure": false,
-    "changeOrigin": true
+    "changeOrigin": true,
+    "headers": {
+      "Origin": "http://localhost:4200"
+    }
   },
   "/api/orders/**": {
     "target": "http://localhost:8082",
     "secure": false,
-    "changeOrigin": true
+    "changeOrigin": true,
+    "headers": {
+      "Origin": "http://localhost:4200"
+    }
   }
 }
