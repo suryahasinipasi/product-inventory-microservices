@@ -103,3 +103,16 @@ The H2 database is in memory. It is recreated and seeded with three products whe
 3. Kafka events and idempotent consumers
 4. Multithreading and `CompletableFuture`
 5. Design patterns, security, Docker, and integration testing
+
+
+## Surya Store Website and AI
+
+The project also includes an Angular storefront and an
+Ollama-powered assistant connected to the product catalog.
+
+- Browse products and view prices.
+- Ask catalog questions through `/api/ai/chat`.
+- Use Java-based filtering for supported price questions.
+
+The demo runs on my Mac through a temporary Cloudflare Tunnel.
+Public demo access is pending protection of admin operations.
