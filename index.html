@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Surya Store · Product Demo</title>
+<meta name="description" content="Explore the Surya Store sample catalog and try the demo shopping cart.">
+<style>
+:root{font-family:system-ui,sans-serif;color:#142437;background:#f3f6fa}*{box-sizing:border-box}body{margin:0}button,input,select{font:inherit}button{cursor:pointer;border:0;border-radius:12px;padding:12px 18px;background:#142437;color:white;font-weight:650}button:disabled{opacity:.45;cursor:not-allowed}button:hover:not(:disabled){background:#304c6c}button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #e4552d;outline-offset:3px}header{background:#142437;color:white;padding:24px max(5vw,20px);display:flex;justify-content:space-between;align-items:center;gap:20px}header strong{font-size:24px}header span{color:#c4d1de;font-size:14px}main{max-width:1280px;margin:auto;padding:40px 24px}h1{font-size:clamp(32px,5vw,52px);letter-spacing:-.04em;margin:0 0 12px}p{line-height:1.6;color:#53657a}a{color:inherit}.intro{max-width:740px;margin-bottom:30px}.label{color:#c44520;font-size:14px;font-weight:750;letter-spacing:.1em;text-transform:uppercase}.layout{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:28px}.controls{display:flex;gap:12px;margin-bottom:22px;flex-wrap:wrap}input,select{border:1px solid #c4d1de;border-radius:12px;padding:12px;background:white;max-width:100%}input{flex:1;min-width:150px}.products{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:18px}.card,.cart,.notice{background:white;border:1px solid #dce4eb;border-radius:20px;padding:24px}.card{display:flex;flex-direction:column;gap:12px}.card h2{margin:0;font-size:24px}.visual{height:110px;background:#e8eff7;border-radius:12px;display:grid;place-items:center;font-size:48px}.price{font-size:24px;font-weight:750}.stock{font-size:14px;color:#426246}.card button{margin-top:auto}.cart{align-self:start;position:sticky;top:20px}.cart h2{margin-top:0}.cart-item{padding:16px 0;border-bottom:1px solid #dce4eb}.cart-item p{margin:4px 0 10px}.quantity{display:flex;align-items:center;gap:14px}.quantity button{padding:6px 12px}.quantity .remove{margin-left:auto;background:#f0f3f7;color:#314356;font-size:14px}.total{display:flex;justify-content:space-between;font-weight:750;font-size:22px;margin:24px 0}#checkout{width:100%;background:#c44520}#message{color:#276241}.notice{margin-top:28px;background:#e8eff7}.notice h2{margin-top:0}.notice p{margin-bottom:0}footer{padding:30px 24px;text-align:center;color:#53657a;font-size:14px}.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}@media(max-width:850px){.layout{grid-template-columns:1fr}.cart{position:static}header{flex-wrap:wrap}}@media(prefers-reduced-motion:no-preference){html{scroll-behavior:smooth}}
+</style>
+</head>
+<body>
+<header><strong>Surya Store</strong><span>Portfolio demo · <a href="#cart">Cart (<span id="count">0</span>)</a></span></header>
+<main>
+<div class="intro"><div class="label">Explore the collection</div><h1>Your everyday essentials.</h1><p>Browse the sample catalog and try the shopping cart. This public demo does not place real orders, collect payments, or connect to the local Java services.</p></div>
+<div class="layout"><section aria-label="Product catalog"><div class="controls"><label class="sr-only" for="search">Search products</label><input id="search" type="search" placeholder="Search products"><label class="sr-only" for="sort">Sort products</label><select id="sort"><option value="name">Name</option><option value="price">Lowest price</option></select></div><div id="products" class="products"></div><p id="empty" hidden>No matching products. Try another search.</p></section>
+<aside id="cart" class="cart" aria-label="Shopping cart"><h2>Your cart</h2><div id="items"></div><div class="total"><span>Demo total</span><span id="total">$0.00</span></div><button id="checkout" disabled>Complete demo checkout</button><p id="message" role="status"></p><p>No payment or personal details required. Cart resets when you reload.</p></aside></div>
+<section class="notice"><h2>Surya AI · Unavailable</h2><p>AI chat is disabled in this version. You can still browse products and use the demo cart.</p></section>
+<noscript><p>Please enable JavaScript to browse the catalog and use the cart.</p></noscript>
+</main><footer>Surya Store · Sample prices in USD · <a href="https://github.com/suryahasinipasi/product-inventory-microservices">View the project on GitHub</a></footer>
+<script>
+'use strict';
+const products=[{id:3,name:'Headphones',cents:14999,quantity:30,icon:'🎧'},{id:1,name:'Laptop',cents:99999,quantity:10,icon:'💻'},{id:2,name:'Phone',cents:69999,quantity:20,icon:'📱'}];
+const cart=new Map();
+const money=cents=>new Intl.NumberFormat('en-US',{style:'currency',currency:'USD'}).format(cents/100);
+function render(){
+ const query=document.querySelector('#search').value.trim().toLowerCase();
+ const visible=products.filter(p=>p.name.toLowerCase().includes(query)).sort((a,b)=>document.querySelector('#sort').value==='price'?a.cents-b.cents:a.name.localeCompare(b.name));
+ document.querySelector('#products').innerHTML=visible.map(p=>`<article class="card"><div class="visual" aria-hidden="true">${p.icon}</div><h2>${p.name}</h2><div class="price">${money(p.cents)}</div><div class="stock">${p.quantity} units · sample stock</div><button data-action="add" data-id="${p.id}" ${(cart.get(p.id)||0)>=p.quantity?'disabled':''} aria-label="Add ${p.name} to cart">Add to cart</button></article>`).join('');
+ document.querySelector('#empty').hidden=visible.length!==0;
+ let count=0,total=0;
+ document.querySelector('#items').innerHTML=products.filter(p=>cart.has(p.id)).map(p=>{const n=cart.get(p.id);count+=n;total+=n*p.cents;return `<div class="cart-item"><strong>${p.name}</strong><p>${money(p.cents)} each · ${money(p.cents*n)}</p><div class="quantity"><button data-action="subtract" data-id="${p.id}" aria-label="Decrease ${p.name} quantity">−</button><span>${n}</span><button data-action="add" data-id="${p.id}" aria-label="Increase ${p.name} quantity" ${n>=p.quantity?'disabled':''}>+</button><button class="remove" data-action="remove" data-id="${p.id}" aria-label="Remove ${p.name}">Remove</button></div></div>`}).join('')||'<p>Your cart is empty. Add a product to begin.</p>';
+ document.querySelector('#total').textContent=money(total);document.querySelector('#count').textContent=String(count);document.querySelector('#checkout').disabled=count===0;
+}
+document.addEventListener('click',e=>{const button=e.target.closest('button[data-action]');if(!button)return;const id=Number(button.dataset.id),p=products.find(p=>p.id===id);if(!p)return;const n=cart.get(id)||0;const action=button.dataset.action;if(action==='add')cart.set(id,Math.min(n+1,p.quantity));else if(action==='remove'||n<=1)cart.delete(id);else cart.set(id,n-1);document.querySelector('#message').textContent='';render()});
+document.querySelector('#search').addEventListener('input',render);document.querySelector('#sort').addEventListener('change',render);
+document.querySelector('#checkout').addEventListener('click',()=>{if(!cart.size)return;cart.clear();render();document.querySelector('#message').textContent='Demo checkout complete. No real order was placed and no payment was collected.'});
+render();
+</script>
+</body></html>
