@@ -114,6 +114,7 @@ constructor(
     this.productApi.getProducts().subscribe({
       next: (products) => {
         this.products = products;
+        this.syncInventoryFromProducts();
         this.changeDetector.markForCheck();
       },
       error: (error) => {
@@ -130,6 +131,8 @@ constructor(
       },
       error: (error) => {
         console.error('Unable to load inventory', error);
+        this.syncInventoryFromProducts();
+        this.changeDetector.markForCheck();
       },
     });
   }
@@ -343,6 +346,7 @@ constructor(
             .filter((item) => item.quantity > 0);
 
           this.resetForm();
+          this.syncInventoryFromProducts();
           this.changeDetector.markForCheck();
           this.refreshEventData();
         },
@@ -359,6 +363,8 @@ constructor(
         this.products = [...this.products, createdProduct];
 
         this.resetForm();
+        this.syncInventoryFromProducts();
+        this.syncInventoryFromProducts();
         this.changeDetector.markForCheck();
         this.refreshEventData();
       },
@@ -397,6 +403,19 @@ constructor(
         console.error('Unable to delete product', error);
       },
     });
+  }
+
+  private syncInventoryFromProducts(): void {
+    const updatedAt = new Date().toISOString();
+
+    this.inventoryItems = this.products.map((product) => ({
+      id: product.id,
+      productId: product.id,
+      productName: product.name,
+      price: product.price,
+      quantity: product.quantity,
+      updatedAt,
+    }));
   }
 
   private refreshEventData(): void {
