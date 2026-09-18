@@ -364,7 +364,6 @@ constructor(
 
         this.resetForm();
         this.syncInventoryFromProducts();
-        this.syncInventoryFromProducts();
         this.changeDetector.markForCheck();
         this.refreshEventData();
       },
