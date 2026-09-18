@@ -210,7 +210,11 @@
             *ngFor="let product of products; trackBy: trackProduct"
           >
             <div class="store-product-visual">
-              {{ product.name.charAt(0) }}
+              <img
+                [src]="productImage(product)"
+                [alt]="product.name"
+                loading="lazy"
+              />
             </div>
 
             <div class="store-product-content">

@@ -501,4 +501,24 @@ constructor(
   trackOrder(index: number, order: OrderResponse): number {
     return order.id;
   }
+  productImage(product: Product): string {
+    const imageByName: Record<string, string> = {
+      'headphones': 'headphones.svg',
+      'keyboard': 'keyboard.svg',
+      'laptop': 'laptop.svg',
+      'phone': 'phone.svg',
+      'portable ssd pro': 'portable-ssd-pro.svg',
+      'smart watch': 'smart-watch.svg',
+      'tablet': 'tablet.svg',
+      'usb hub': 'usb-hub.svg',
+      'wireless mouse': 'wireless-mouse.svg',
+    };
+
+    const fileName =
+      imageByName[product.name.trim().toLowerCase()]
+      ?? 'default-product.svg';
+
+    return `/product-images/${fileName}`;
+  }
+
 }
