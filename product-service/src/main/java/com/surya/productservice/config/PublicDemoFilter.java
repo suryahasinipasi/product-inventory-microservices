@@ -11,11 +11,15 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Set;
 
 @Component
 @Profile("public-demo")
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class PublicDemoFilter extends OncePerRequestFilter {
+
+    private static final Set<String> WRITE_METHODS =
+            Set.of("POST", "PUT", "PATCH", "DELETE");
 
     @Override
     protected void doFilterInternal(
@@ -26,15 +30,11 @@ public class PublicDemoFilter extends OncePerRequestFilter {
         String path = request.getServletPath();
         String method = request.getMethod();
 
-        boolean productRead =
-                ("GET".equals(method) || "HEAD".equals(method))
-                && path.matches("/api/products(?:/(?:[0-9]+|filter|views))?");
+        boolean productWrite =
+                path.startsWith("/api/products")
+                        && WRITE_METHODS.contains(method);
 
-        boolean aiChat =
-                "POST".equals(method)
-                && "/api/ai/chat".equals(path);
-
-        if (productRead || aiChat) {
+        if (!productWrite) {
             chain.doFilter(request, response);
             return;
         }
