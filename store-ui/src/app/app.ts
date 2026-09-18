@@ -17,6 +17,7 @@ export class App implements OnInit {
   activeView: 'storefront' | 'orders' | 'products' | 'inventory' | 'events' = 'storefront';
 
   products: Product[] = [];
+  selectedProduct: Product | null = null;
 
   storeSearch = '';
   storeSort = 'featured';
@@ -290,6 +291,58 @@ constructor(
         orderTotal + order.items.reduce((itemTotal, item) => itemTotal + item.quantity, 0),
       0,
     );
+  }
+
+  openProductDetails(product: Product): void {
+    this.selectedProduct = product;
+  }
+
+  closeProductDetails(): void {
+    this.selectedProduct = null;
+  }
+
+  productCategory(product: Product): string {
+    const name = product.name.toLowerCase();
+
+    if (name.includes('headphone')) return 'Audio';
+    if (name.includes('keyboard') || name.includes('mouse')) return 'Accessories';
+    if (name.includes('phone') || name.includes('watch')) return 'Mobile';
+    if (name.includes('ssd') || name.includes('drive')) return 'Storage';
+    if (name.includes('laptop') || name.includes('tablet')) return 'Computers';
+    if (name.includes('usb') || name.includes('hub')) return 'Connectivity';
+
+    return 'Technology';
+  }
+
+  productRating(product: Product): string {
+    const rating = 4.2 + ((product.id % 7) * 0.1);
+    return Math.min(rating, 4.9).toFixed(1);
+  }
+
+  productDescription(product: Product): string {
+    const descriptions: Record<string, string> = {
+      'headphones':
+        'Comfortable everyday headphones with clear audio for music, calls, and entertainment.',
+      'keyboard':
+        'A responsive keyboard designed for comfortable typing at home, school, or work.',
+      'laptop':
+        'A powerful and dependable laptop for productivity, learning, and daily computing.',
+      'phone':
+        'A modern smartphone that keeps communication, apps, and entertainment within reach.',
+      'portable ssd pro':
+        'Fast portable storage for securely carrying important documents, photos, and projects.',
+      'smart watch':
+        'A stylish smart watch for notifications, daily activity, and convenient time tracking.',
+      'tablet':
+        'A versatile tablet for browsing, streaming, reading, learning, and light productivity.',
+      'usb hub':
+        'A compact connectivity hub that gives your computer more convenient USB connections.',
+      'wireless mouse':
+        'A comfortable wireless mouse providing smooth control without unnecessary cables.',
+    };
+
+    return descriptions[product.name.trim().toLowerCase()]
+      ?? `A quality ${product.name} selected for the Surya Store collection.`;
   }
 
   addToCart(product: Product): void {

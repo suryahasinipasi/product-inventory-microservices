@@ -1,5 +1,70 @@
 <div class="app-shell">
   <div
+    class="product-modal-backdrop"
+    *ngIf="selectedProduct as product"
+    (click)="closeProductDetails()"
+  >
+    <section
+      class="product-modal"
+      role="dialog"
+      aria-modal="true"
+      (click)="$event.stopPropagation()"
+    >
+      <button
+        class="product-modal-close"
+        type="button"
+        aria-label="Close product details"
+        (click)="closeProductDetails()"
+      >
+        ×
+      </button>
+
+      <div class="product-modal-visual">
+        <img [src]="productImage(product)" [alt]="product.name" />
+      </div>
+
+      <div class="product-modal-content">
+        <span class="product-detail-category">
+          {{ productCategory(product) }}
+        </span>
+
+        <h2>{{ product.name }}</h2>
+
+        <div class="product-rating">
+          <span aria-hidden="true">★★★★★</span>
+          <strong>{{ productRating(product) }}</strong>
+        </div>
+
+        <p>{{ productDescription(product) }}</p>
+
+        <strong class="product-detail-price">
+          {{ product.price | currency }}
+        </strong>
+
+        <span
+          class="availability"
+          [class.low-availability]="product.quantity <= 10"
+        >
+          {{
+            product.quantity > 0
+              ? product.quantity + ' available'
+              : 'Out of stock'
+          }}
+        </span>
+
+        <button
+          class="add-cart-button product-detail-cart"
+          type="button"
+          [disabled]="product.quantity === 0"
+          (click)="addToCart(product); closeProductDetails()"
+        >
+          Add to Cart
+        </button>
+      </div>
+    </section>
+  </div>
+
+  <div
     class="owner-modal-backdrop"
     *ngIf="ownerLoginVisible"
     (click)="closeOwnerLogin()"
@@ -305,14 +370,24 @@
                   }}
                 </span>
 
-                <button
-                  class="add-cart-button"
-                  type="button"
-                  (click)="addToCart(product)"
-                  [disabled]="product.quantity === 0"
-                >
-                  Add to Cart
-                </button>
+                <div class="product-card-actions">
+                  <button
+                    class="view-details-button"
+                    type="button"
+                    (click)="openProductDetails(product)"
+                  >
+                    View Details
+                  </button>
+
+                  <button
+                    class="add-cart-button"
+                    type="button"
+                    (click)="addToCart(product)"
+                    [disabled]="product.quantity === 0"
+                  >
+                    Add to Cart
+                  </button>
+                </div>
               </div>
             </div>
           </article>
@@ -320,10 +395,10 @@
 
         <div
           class="empty-state storefront-empty"
-          *ngIf="products.length === 0"
+          *ngIf="filteredProducts.length === 0"
         >
-          <strong>No products available</strong>
-          <span>Please check again later.</span>
+          <strong>No matching products</strong>
+          <span>Try changing your search or filters.</span>
         </div>
       </div>
 
