@@ -116,3 +116,9 @@ Ollama-powered assistant connected to the product catalog.
 
 The demo runs on my Mac through a temporary Cloudflare Tunnel.
 Public demo access is pending protection of admin operations.
+
+## Live Demo
+
+[Open Surya Store](https://surya-store-ojpr.onrender.com/)
+
+Public demo with an Angular storefront, Spring Boot product API, and Groq-powered AI assistant. Product changes are disabled in public-demo mode.
