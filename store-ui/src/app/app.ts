@@ -33,6 +33,11 @@ export class App implements OnInit {
   checkoutMessage = '';
   checkoutError = '';
 
+  isOwner = false;
+  ownerLoginVisible = false;
+  ownerPassword = '';
+  ownerLoginError = '';
+
 
   suryaAiQuestion = '';
   suryaAiAnswer = '';
@@ -80,7 +85,50 @@ constructor(
     private readonly changeDetector: ChangeDetectorRef,
   ) {}
 
+  openOwnerLogin(): void {
+    this.ownerPassword = '';
+    this.ownerLoginError = '';
+    this.ownerLoginVisible = true;
+  }
+
+  closeOwnerLogin(): void {
+    this.ownerLoginVisible = false;
+    this.ownerPassword = '';
+    this.ownerLoginError = '';
+  }
+
+  loginOwner(): void {
+    const password = this.ownerPassword.trim();
+
+    if (!password) {
+      this.ownerLoginError = 'Enter the owner password.';
+      return;
+    }
+
+    this.productApi.loginOwner(password).subscribe({
+      next: () => {
+        this.isOwner = true;
+        this.ownerLoginVisible = false;
+        this.ownerPassword = '';
+        this.ownerLoginError = '';
+        this.changeDetector.markForCheck();
+      },
+      error: () => {
+        this.ownerLoginError = 'Incorrect owner password.';
+        this.changeDetector.markForCheck();
+      },
+    });
+  }
+
+  logoutOwner(): void {
+    this.productApi.logoutOwner();
+    this.isOwner = false;
+    this.activeView = 'storefront';
+    this.changeDetector.markForCheck();
+  }
+
   ngOnInit(): void {
+    this.isOwner = this.productApi.isOwnerLoggedIn();
     this.loadProducts();
     this.loadInventory();
     this.loadEvents();
@@ -92,6 +140,7 @@ constructor(
   }
 
   showProducts(): void {
+    if (!this.isOwner) return;
     this.activeView = 'products';
   }
 
@@ -101,11 +150,13 @@ constructor(
   }
 
   showInventory(): void {
+    if (!this.isOwner) return;
     this.activeView = 'inventory';
     this.loadInventory();
   }
 
   showEvents(): void {
+    if (!this.isOwner) return;
     this.activeView = 'events';
     this.loadEvents();
   }

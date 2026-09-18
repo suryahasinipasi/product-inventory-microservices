@@ -1,4 +1,48 @@
 <div class="app-shell">
+  <div
+    class="owner-modal-backdrop"
+    *ngIf="ownerLoginVisible"
+    (click)="closeOwnerLogin()"
+  >
+    <section
+      class="owner-modal"
+      role="dialog"
+      aria-modal="true"
+      (click)="$event.stopPropagation()"
+    >
+      <button
+        class="owner-modal-close"
+        type="button"
+        (click)="closeOwnerLogin()"
+      >
+        ×
+      </button>
+
+      <p class="eyebrow">PRIVATE ACCESS</p>
+      <h2>Owner Login</h2>
+      <p>Sign in to manage products, inventory, and events.</p>
+
+      <form (ngSubmit)="loginOwner()">
+        <label for="ownerPassword">Owner password</label>
+        <input
+          id="ownerPassword"
+          name="ownerPassword"
+          type="password"
+          [(ngModel)]="ownerPassword"
+          required
+        />
+
+        <p class="owner-login-error" *ngIf="ownerLoginError">
+          {{ ownerLoginError }}
+        </p>
+
+        <button class="primary-button" type="submit">
+          Login
+        </button>
+      </form>
+    </section>
+  </div>
+
   <aside class="sidebar">
     <div>
       <div class="brand">
@@ -6,7 +50,7 @@
 
         <div>
           <strong>Surya Store</strong>
-          <span>Inventory System</span>
+          <span>Online Store</span>
         </div>
       </div>
 
@@ -42,6 +86,7 @@
           class="nav-item"
           [class.active]="activeView === 'products'"
           type="button"
+          *ngIf="isOwner"
           (click)="showProducts()"
         >
           <span>▦</span>
@@ -52,6 +97,7 @@
           class="nav-item"
           [class.active]="activeView === 'inventory'"
           type="button"
+          *ngIf="isOwner"
           (click)="showInventory()"
         >
           <span>▤</span>
@@ -62,6 +108,7 @@
           class="nav-item"
           [class.active]="activeView === 'events'"
           type="button"
+          *ngIf="isOwner"
           (click)="showEvents()"
         >
           <span>⌁</span>
@@ -70,20 +117,33 @@
       </nav>
     </div>
 
-    <div class="service-status">
-      <span class="status-dot"></span>
+    <div class="owner-access">
+      <button
+        *ngIf="!isOwner"
+        type="button"
+        class="owner-login-button"
+        (click)="openOwnerLogin()"
+      >
+        Owner Login
+      </button>
 
-      <div>
-        <strong>Services online</strong>
-        <span>Product · Inventory · Kafka</span>
-      </div>
+      <button
+        *ngIf="isOwner"
+        type="button"
+        class="owner-login-button"
+        (click)="logoutOwner()"
+      >
+        Owner Logout
+      </button>
     </div>
   </aside>
 
   <main class="main-content">
     <header class="topbar">
       <div>
-        <p class="eyebrow">EVENT-DRIVEN COMMERCE</p>
+        <p class="eyebrow">
+          {{ isOwner ? 'OWNER DASHBOARD' : 'WELCOME TO SURYA STORE' }}
+        </p>
 
         <h1>
           {{
@@ -114,7 +174,7 @@
         </p>
       </div>
 
-      <div class="profile">
+      <div class="profile" *ngIf="isOwner">
         <div class="profile-avatar">SH</div>
 
         <div>
@@ -135,8 +195,7 @@
             <p class="eyebrow">FEATURED COLLECTION</p>
             <h2>Everything you need, in one place.</h2>
             <p>
-              Products are loaded directly from the Spring Boot
-              Product Service.
+              Discover quality products selected for everyday needs.
             </p>
           </div>
 

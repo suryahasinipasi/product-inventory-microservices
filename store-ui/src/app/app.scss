@@ -1395,3 +1395,72 @@ form input:focus,
   color: #8a640e;
   background: #fff4cf;
 }
+
+
+/* Owner access */
+.owner-access {
+  padding: 1rem;
+}
+
+.owner-login-button {
+  width: 100%;
+  border: 1px solid #b9dced;
+  border-radius: 14px;
+  padding: 0.85rem 1rem;
+  background: #ffffff;
+  color: #153b5b;
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.owner-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  background: rgba(12, 38, 61, 0.55);
+}
+
+.owner-modal {
+  position: relative;
+  width: min(430px, 100%);
+  padding: 2rem;
+  border: 1px solid #b9def1;
+  border-radius: 24px;
+  background: #ffffff;
+  box-shadow: 0 24px 70px rgba(13, 54, 84, 0.25);
+}
+
+.owner-modal form {
+  display: grid;
+  gap: 0.8rem;
+  margin-top: 1.25rem;
+}
+
+.owner-modal input {
+  box-sizing: border-box;
+  width: 100%;
+  border: 1px solid #c7dce8;
+  border-radius: 12px;
+  padding: 0.9rem 1rem;
+  font: inherit;
+}
+
+.owner-modal-close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  border: 0;
+  background: transparent;
+  font-size: 1.6rem;
+  cursor: pointer;
+}
+
+.owner-login-error {
+  margin: 0;
+  color: #c33c4b;
+  font-weight: 700;
+}
