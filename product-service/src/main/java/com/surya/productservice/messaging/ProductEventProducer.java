@@ -15,6 +15,7 @@ public class ProductEventProducer {
 
     private final KafkaTemplate<String, ProductEvent> kafkaTemplate;
     private final boolean kafkaEnabled;
+    private final boolean kafkaEnabled;
 
     public ProductEventProducer(
             KafkaTemplate<String, ProductEvent> kafkaTemplate,
