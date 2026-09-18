@@ -1,0 +1,9 @@
+
+*.backup-*
+.idea/
+*.iml
+**/target/
+**/node_modules/
+**/.angular/
+*.backup-*
+.DS_Store

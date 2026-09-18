@@ -33,7 +33,46 @@ export class App implements OnInit {
   checkoutMessage = '';
   checkoutError = '';
 
-  constructor(
+
+  suryaAiQuestion = '';
+  suryaAiAnswer = '';
+  suryaAiBusy = false;
+
+  async askSuryaAi(): Promise<void> {
+    const message = this.suryaAiQuestion.trim();
+    if (!message || this.suryaAiBusy) return;
+
+    this.suryaAiBusy = true;
+    this.suryaAiAnswer = '';
+    this.changeDetector.markForCheck();
+
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 120000);
+
+    try {
+      const response = await fetch('/api/ai/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message }),
+        signal: controller.signal
+      });
+      if (!response.ok) throw new Error('Request failed');
+      const data = await response.json();
+      if (typeof data.answer !== 'string' || !data.answer.trim()) {
+        throw new Error('Empty answer');
+      }
+      this.suryaAiAnswer = data.answer;
+    } catch {
+      this.suryaAiAnswer =
+        'Could not get an answer. Check that the product service and Ollama are running, then try again.';
+    } finally {
+      clearTimeout(timer);
+      this.suryaAiBusy = false;
+      this.changeDetector.markForCheck();
+    }
+  }
+
+constructor(
     private readonly productApi: ProductApiService,
     private readonly inventoryApi: InventoryApiService,
     private readonly eventApi: EventApiService,

@@ -868,3 +868,23 @@
     </section>
   </main>
 </div>
+
+<section aria-labelledby="surya-ai-title"
+  style="max-width:760px;margin:24px auto;padding:24px;background:#fff;color:#172033;border:1px solid #ddd;border-radius:16px">
+  <h2 id="surya-ai-title">Ask Surya AI</h2>
+  <p>Ask about our products, prices, and availability.</p>
+  <form (ngSubmit)="askSuryaAi()">
+    <label for="surya-ai-question">Your question</label>
+    <input id="surya-ai-question" name="suryaAiQuestion"
+      [(ngModel)]="suryaAiQuestion"
+      placeholder="Which products cost less than $200?"
+      maxlength="2000" required
+      style="display:block;box-sizing:border-box;width:100%;padding:12px;margin:12px 0">
+    <button type="submit"
+      [disabled]="suryaAiBusy || !suryaAiQuestion.trim()"
+      style="padding:12px 20px">
+      {{ suryaAiBusy ? 'Thinking…' : 'Ask AI' }}
+    </button>
+  </form>
+  <p aria-live="polite" style="white-space:pre-wrap">{{ suryaAiAnswer }}</p>
+</section>
