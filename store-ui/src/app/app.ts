@@ -17,6 +17,11 @@ export class App implements OnInit {
   activeView: 'storefront' | 'orders' | 'products' | 'inventory' | 'events' = 'storefront';
 
   products: Product[] = [];
+
+  storeSearch = '';
+  storeSort = 'featured';
+  storeMaxPrice: number | null = null;
+  inStockOnly = false;
   inventoryItems: InventoryItem[] = [];
   events: ProductEvent[] = [];
   cartItems: CartItem[] = [];
@@ -210,6 +215,45 @@ constructor(
         console.error('Unable to load orders', error);
       },
     });
+  }
+
+  get filteredProducts(): Product[] {
+    const search = this.storeSearch.trim().toLowerCase();
+
+    const filtered = this.products.filter((product) => {
+      const matchesSearch =
+        !search || product.name.toLowerCase().includes(search);
+
+      const matchesPrice =
+        this.storeMaxPrice === null ||
+        this.storeMaxPrice <= 0 ||
+        product.price <= this.storeMaxPrice;
+
+      const matchesStock =
+        !this.inStockOnly || product.quantity > 0;
+
+      return matchesSearch && matchesPrice && matchesStock;
+    });
+
+    return [...filtered].sort((left, right) => {
+      switch (this.storeSort) {
+        case 'price-low':
+          return left.price - right.price;
+        case 'price-high':
+          return right.price - left.price;
+        case 'name':
+          return left.name.localeCompare(right.name);
+        default:
+          return left.id - right.id;
+      }
+    });
+  }
+
+  clearStoreFilters(): void {
+    this.storeSearch = '';
+    this.storeSort = 'featured';
+    this.storeMaxPrice = null;
+    this.inStockOnly = false;
   }
 
   get totalProducts(): number {

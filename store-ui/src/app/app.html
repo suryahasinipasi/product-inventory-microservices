@@ -204,10 +204,71 @@
           </span>
         </div>
 
+
+        <section class="store-tools" aria-label="Product search and filters">
+          <div class="store-search">
+            <label for="storeSearch">Search products</label>
+            <input
+              id="storeSearch"
+              name="storeSearch"
+              type="search"
+              placeholder="Search products..."
+              [(ngModel)]="storeSearch"
+            />
+          </div>
+
+          <div>
+            <label for="storeMaxPrice">Maximum price</label>
+            <input
+              id="storeMaxPrice"
+              name="storeMaxPrice"
+              type="number"
+              min="0"
+              placeholder="Any price"
+              [(ngModel)]="storeMaxPrice"
+            />
+          </div>
+
+          <div>
+            <label for="storeSort">Sort products</label>
+            <select
+              id="storeSort"
+              name="storeSort"
+              [(ngModel)]="storeSort"
+            >
+              <option value="featured">Featured</option>
+              <option value="price-low">Price: low to high</option>
+              <option value="price-high">Price: high to low</option>
+              <option value="name">Name: A to Z</option>
+            </select>
+          </div>
+
+          <label class="stock-filter">
+            <input
+              name="inStockOnly"
+              type="checkbox"
+              [(ngModel)]="inStockOnly"
+            />
+            In-stock only
+          </label>
+
+          <button
+            class="clear-filter-button"
+            type="button"
+            (click)="clearStoreFilters()"
+          >
+            Clear
+          </button>
+        </section>
+
+        <p class="store-results">
+          Showing {{ filteredProducts.length }} of {{ totalProducts }} products
+        </p>
+
         <div class="store-product-grid">
           <article
             class="store-product-card"
-            *ngFor="let product of products; trackBy: trackProduct"
+            *ngFor="let product of filteredProducts; trackBy: trackProduct"
           >
             <div class="store-product-visual">
               <img
