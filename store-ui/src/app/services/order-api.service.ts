@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 
 export interface OrderItemRequest {
   productId: number;
@@ -36,15 +35,41 @@ export interface OrderResponse {
   providedIn: 'root',
 })
 export class OrderApiService {
-  private readonly apiUrl = '/api/orders';
-
-  constructor(private readonly http: HttpClient) {}
+  private readonly storageKey = 'surya-store-orders';
 
   createOrder(request: CreateOrderRequest): Observable<OrderResponse> {
-    return this.http.post<OrderResponse>(this.apiUrl, request);
+    const order: OrderResponse = {
+      id: Date.now(),
+      customerName: request.customerName,
+      customerEmail: request.customerEmail,
+      totalAmount: request.items.reduce(
+        (total, item) => total + item.unitPrice * item.quantity,
+        0,
+      ),
+      status: 'PLACED',
+      createdAt: new Date().toISOString(),
+      items: request.items,
+    };
+
+    const orders = this.readOrders();
+    localStorage.setItem(
+      this.storageKey,
+      JSON.stringify([order, ...orders]),
+    );
+
+    return of(order);
   }
 
   getOrders(): Observable<OrderResponse[]> {
-    return this.http.get<OrderResponse[]>(this.apiUrl);
+    return of(this.readOrders());
+  }
+
+  private readOrders(): OrderResponse[] {
+    try {
+      const storedOrders = localStorage.getItem(this.storageKey);
+      return storedOrders ? JSON.parse(storedOrders) : [];
+    } catch {
+      return [];
+    }
   }
 }
