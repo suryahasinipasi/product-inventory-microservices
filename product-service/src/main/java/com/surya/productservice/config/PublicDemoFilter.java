@@ -14,7 +14,7 @@ import java.io.IOException;
 import java.util.Set;
 
 @Component
-@Profile("public-demo")
+@Profile("public-demo-read-only")
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class PublicDemoFilter extends OncePerRequestFilter {
 
