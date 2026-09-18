@@ -8,5 +8,7 @@ services:
     envVars:
       - key: GROQ_API_KEY
         sync: false
+      - key: ADMIN_PASSWORD_SHA256
+        value: 140a773b4f21b5a26640de70f3dbdaa582ce147b365b02f6f79d75af05286b12
       - key: PORT
         value: 8080
