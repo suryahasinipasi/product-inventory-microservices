@@ -19,7 +19,11 @@ public class DataInitializer {
                 productRepository.saveAll(List.of(
                         new Product("Laptop", new BigDecimal("999.99"), 10),
                         new Product("Phone", new BigDecimal("699.99"), 20),
-                        new Product("Headphones", new BigDecimal("149.99"), 30)
+                        new Product("Headphones", new BigDecimal("149.99"), 30),
+                        new Product("Smart Watch", new BigDecimal("199.99"), 15),
+                        new Product("Keyboard", new BigDecimal("89.99"), 25),
+                        new Product("Wireless Mouse", new BigDecimal("39.99"), 40),
+                        new Product("Tablet", new BigDecimal("449.99"), 12)
                 ));
             }
         };
